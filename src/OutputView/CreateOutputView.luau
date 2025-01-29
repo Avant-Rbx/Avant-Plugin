@@ -26,7 +26,10 @@ return function(Scope: CreateFusionScope.FusionScope, TestRunner: TestRunner.Tes
                         Text = SecondaryTextFormatter(Scope, Scope:Computed(function(use)
                             local CurrentFocusedOutputTest = use(FocusedOutputTest)
                             return CurrentFocusedOutputTest and CurrentFocusedOutputTest.Name or "<i>No selected test</i>"
-                        end)), --TODO: Show full test name in secondary text.
+                        end), Scope:Computed(function(use)
+                            local CurrentFocusedOutputTest = use(FocusedOutputTest)
+                            return CurrentFocusedOutputTest and CurrentFocusedOutputTest:GetFullName()
+                        end)),
                         RichText = true,
                     }),
                 },
