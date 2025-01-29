@@ -7,16 +7,17 @@ local BUTTON_SIZE = Vector2.new(512, 512)
 local CreateFusionScope = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("CreateFusionScope"))
 local Fusion = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("Fusion"))
 local SecondaryTextFormatter = require(script.Parent.Parent:WaitForChild("Util"):WaitForChild("SecondaryTextFormatter"))
+local TestRunner = require(script.Parent.Parent:WaitForChild("TestRunner"))
 local CreateTestIcon = require(script.Parent:WaitForChild("CreateTestIcon"))
 local CreateTestList = require(script.Parent:WaitForChild("CreateTestList"))
-local TestSelectionListEntry = require(script.Parent:WaitForChild("TestSelectionListEntry"))
 local TestSummary = require(script.Parent:WaitForChild("TestSummary"))
 
 local Children = Fusion.Children
 local OnEvent = Fusion.OnEvent
 
-return function(Scope: CreateFusionScope.FusionScope, ListEntry: TestSelectionListEntry.TestSelectionListEntry): Frame
+return function(Scope: CreateFusionScope.FusionScope, TestRunner: TestRunner.TestRunner): Frame
     --Create the value for having tests.
+    local ListEntry = TestRunner.ListEntry
     local TotalTests = Scope:Value(#ListEntry.Test.ChildTests)
     table.insert(Scope, ListEntry.Test.TestAdded:Connect(function()
         TotalTests:set(#ListEntry.Test.ChildTests)
@@ -26,7 +27,6 @@ return function(Scope: CreateFusionScope.FusionScope, ListEntry: TestSelectionLi
     end))
 
     --Create the test summary.
-    local LastTestRunTime = Scope:Value(DateTime.now() :: DateTime?) --TODO: Move out.
     local EntryTestSummary = TestSummary.new(Scope, ListEntry.Test)
     local SummaryDisplayState = Scope:Computed(function(use)
         local CurrentPassedTests = use(EntryTestSummary.PassedTests)
@@ -43,7 +43,7 @@ return function(Scope: CreateFusionScope.FusionScope, ListEntry: TestSelectionLi
     end)
     local SummaryPrimaryText = Scope:Computed(function(use)
         --Return if the tests weren't run yet.
-        local CurrentLastTestRunTime = use(LastTestRunTime)
+        local CurrentLastTestRunTime = use(TestRunner.LastTestRunTime)
         if not CurrentLastTestRunTime then
             return "Not run"
         end
@@ -52,7 +52,7 @@ return function(Scope: CreateFusionScope.FusionScope, ListEntry: TestSelectionLi
         return `{use(EntryTestSummary.PassedTests)} passed, {use(EntryTestSummary.FailedTests)} failed, {use(EntryTestSummary.SkippedTests)} skipped ({use(EntryTestSummary.TotalTests)} total)`
     end)
     local SummarySecondaryText = Scope:Computed(function(use): string?
-        local CurrentLastTestRunTime = use(LastTestRunTime)
+        local CurrentLastTestRunTime = use(TestRunner.LastTestRunTime)
         if not CurrentLastTestRunTime then return nil end
         return `Started at {CurrentLastTestRunTime:FormatLocalTime("LTS", "en-us")}`
     end)
@@ -76,7 +76,7 @@ return function(Scope: CreateFusionScope.FusionScope, ListEntry: TestSelectionLi
                         ImageRectSize  = BUTTON_SIZE,
                         ImageColor3 = Color3.fromRGB(0, 170, 0),
                         [OnEvent("MouseButton1Down")] = function()
-                            --TODO: Run all tests.
+                            TestRunner:RunTestsForGroup("ALL")
                         end,
                     }),
 
@@ -90,7 +90,7 @@ return function(Scope: CreateFusionScope.FusionScope, ListEntry: TestSelectionLi
                         ImageRectSize  = BUTTON_SIZE,
                         ImageColor3 = Color3.fromRGB(0, 170, 0),
                         [OnEvent("MouseButton1Down")] = function()
-                            --TODO: Run failed tests.
+                            TestRunner:RunTestsForGroup("FAILED")
                         end,
                         [Children] = {
                             Scope:Create("ImageLabel")({
@@ -115,7 +115,7 @@ return function(Scope: CreateFusionScope.FusionScope, ListEntry: TestSelectionLi
                         ImageRectSize  = BUTTON_SIZE,
                         ImageColor3 = Color3.fromRGB(0, 170, 0),
                         [OnEvent("MouseButton1Down")] = function()
-                            --TODO: Run selected tests.
+                            TestRunner:RunTestsForGroup("SELECTED")
                         end,
                         [Children] = {
                             Scope:Create("ImageLabel")({
