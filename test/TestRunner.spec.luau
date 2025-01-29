@@ -21,6 +21,7 @@ return function()
         end)
 
         afterEach(function()
+            task.wait() --Hides error due to Scope being cleaned up before events are fired.
             TestScope:doCleanup()
             TestTest:Destroy()
         end)
