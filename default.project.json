@@ -1,0 +1,12 @@
+{
+    "name": "Avant-Plugin",
+    "tree": {
+        "$path": "./src",
+        "AvantRuntime": {
+            "$path": "./module/Avant-Runtime"
+        },
+        "NexusPluginComponents": {
+            "$path": "./module/Nexus-Plugin-Components"
+        }
+    }
+}

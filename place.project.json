@@ -1,0 +1,12 @@
+{
+    "name": "Avant-Runtime",
+    "tree": {
+        "$className": "DataModel",
+        "ReplicatedStorage": {
+            "$className": "ReplicatedStorage",
+            "AvantPlugin": {
+                "$path": "."
+            }
+        }
+    }
+}
