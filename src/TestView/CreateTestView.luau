@@ -144,7 +144,7 @@ return function(Scope: CreateFusionScope.FusionScope, TestRunner: TestRunner.Tes
             }),
 
             --Test list.
-            CreateTestList(Scope, ListEntry),
+            CreateTestList(Scope, ListEntry, TestRunner),
 
             --Status bar.
             Scope:Create("Frame")({
