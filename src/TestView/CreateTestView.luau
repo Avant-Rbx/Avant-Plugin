@@ -6,9 +6,11 @@ local BUTTON_SIZE = Vector2.new(512, 512)
 
 local CreateFusionScope = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("CreateFusionScope"))
 local Fusion = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("Fusion"))
+local SecondaryTextFormatter = require(script.Parent.Parent:WaitForChild("Util"):WaitForChild("SecondaryTextFormatter"))
 local CreateTestIcon = require(script.Parent:WaitForChild("CreateTestIcon"))
 local CreateTestList = require(script.Parent:WaitForChild("CreateTestList"))
 local TestSelectionListEntry = require(script.Parent:WaitForChild("TestSelectionListEntry"))
+local TestSummary = require(script.Parent:WaitForChild("TestSummary"))
 
 local Children = Fusion.Children
 local OnEvent = Fusion.OnEvent
@@ -22,6 +24,38 @@ return function(Scope: CreateFusionScope.FusionScope, ListEntry: TestSelectionLi
     table.insert(Scope, ListEntry.Test.TestRemoved:Connect(function()
         TotalTests:set(#ListEntry.Test.ChildTests)
     end))
+
+    --Create the test summary.
+    local LastTestRunTime = Scope:Value(DateTime.now() :: DateTime?) --TODO: Move out.
+    local EntryTestSummary = TestSummary.new(Scope, ListEntry.Test)
+    local SummaryDisplayState = Scope:Computed(function(use)
+        local CurrentPassedTests = use(EntryTestSummary.PassedTests)
+        local CurrentSkippedTests = use(EntryTestSummary.SkippedTests)
+        local CurrentFailedTests = use(EntryTestSummary.FailedTests)
+        if CurrentFailedTests > 0 then
+            return "FAILED"
+        elseif CurrentPassedTests > 0 then
+            return "PASSED"
+        elseif CurrentSkippedTests > 0 then
+            return "SKIPPED"
+        end
+        return "NOT_RUN"
+    end)
+    local SummaryPrimaryText = Scope:Computed(function(use)
+        --Return if the tests weren't run yet.
+        local CurrentLastTestRunTime = use(LastTestRunTime)
+        if not CurrentLastTestRunTime then
+            return "Not run"
+        end
+
+        --Build the summary.
+        return `{use(EntryTestSummary.PassedTests)} passed, {use(EntryTestSummary.FailedTests)} failed, {use(EntryTestSummary.SkippedTests)} skipped ({use(EntryTestSummary.TotalTests)} total)`
+    end)
+    local SummarySecondaryText = Scope:Computed(function(use): string?
+        local CurrentLastTestRunTime = use(LastTestRunTime)
+        if not CurrentLastTestRunTime then return nil end
+        return `Started at {CurrentLastTestRunTime:FormatLocalTime("LTS", "en-us")}`
+    end)
 
     --Create and return the view.
     return Scope:Create("Frame")({
@@ -119,26 +153,62 @@ return function(Scope: CreateFusionScope.FusionScope, ListEntry: TestSelectionLi
                 Position = UDim2.new(0, 29, 1, -28),
                 [Children] = {
                     --Combined test state.
-                    --TODO: Read test state.
-                    Scope:Hydrate(CreateTestIcon(Scope, "NOT_RUN", "NORMAL"))({
+                    Scope:Hydrate(CreateTestIcon(Scope, SummaryDisplayState :: any, "NORMAL"))({
                         Size = UDim2.new(0, 16, 0, 16),
                         Position = UDim2.new(0, 6, 0, 6),
                     }),
 
                     --Test bar.
-                    --TODO: Fill with contents.
                     Scope:Create("Frame")({
                         Size = UDim2.new(1, -32, 0, 6),
                         Position = UDim2.new(0, 30, 0, 2),
                         BorderSizePixel = 1,
+                        [Children] = {
+                            --Passed tests.
+                            Scope:Create("Frame")({
+                                Size = Scope:Computed(function(use)
+                                    local TotalTests = math.max(1, use(EntryTestSummary.TotalTests))
+                                    return UDim2.new(use(EntryTestSummary.PassedTests) / TotalTests, 0, 1, 0)
+                                end),
+                                BorderSizePixel = 0,
+                                BackgroundColor3 = Color3.fromRGB(0, 200, 0),
+                            }),
+
+                            --Skipped tests.
+                            Scope:Create("Frame")({
+                                Size = Scope:Computed(function(use)
+                                    local TotalTests = math.max(1, use(EntryTestSummary.TotalTests))
+                                    return UDim2.new(use(EntryTestSummary.SkippedTests) / TotalTests, 0, 1, 0)
+                                end),
+                                Position = Scope:Computed(function(use)
+                                    local TotalTests = math.max(1, use(EntryTestSummary.TotalTests))
+                                    return UDim2.new(use(EntryTestSummary.PassedTests) / TotalTests, 0, 0, 0)
+                                end),
+                                BorderSizePixel = 0,
+                                BackgroundColor3 = Color3.fromRGB(200, 200, 0),
+                            }),
+
+                            --Failed tests.
+                            Scope:Create("Frame")({
+                                Size = Scope:Computed(function(use)
+                                    local TotalTests = math.max(1, use(EntryTestSummary.TotalTests))
+                                    return UDim2.new(use(EntryTestSummary.FailedTests) / TotalTests, 0, 1, 0)
+                                end),
+                                Position = Scope:Computed(function(use)
+                                    local TotalTests = math.max(1, use(EntryTestSummary.TotalTests))
+                                    return UDim2.new((use(EntryTestSummary.PassedTests) + use(EntryTestSummary.SkippedTests)) / TotalTests, 0, 0, 0)
+                                end),
+                                BorderSizePixel = 0,
+                                BackgroundColor3 = Color3.fromRGB(200, 0, 0),
+                            }),
+                        },
                     }),
 
                     --Test totals and run time.
-                    --TODO: Fill with contents.
                     Scope:Create("TextLabel")({
                         Size = UDim2.new(1, -32, 0, 16),
                         Position = UDim2.new(0, 30, 0, 10),
-                        Text = "Not run",
+                        Text = SecondaryTextFormatter(Scope, SummaryPrimaryText, SummarySecondaryText),
                         RichText = true,
                     }),
                 },
