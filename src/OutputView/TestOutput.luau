@@ -1,6 +1,8 @@
 --Manages the output of a test.
 --!strict
 
+local RunService = game:GetService("RunService")
+
 local Test = require(script.Parent.Parent:WaitForChild("AvantRuntime"):WaitForChild("State"):WaitForChild("Test"):WaitForChild("Test"))
 local FormatLines = require(script.Parent.Parent:WaitForChild("AvantRuntime"):WaitForChild("Util"):WaitForChild("FormatLines"))
 local CreateFusionScope = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("CreateFusionScope"))
@@ -13,6 +15,8 @@ TestOutput.__index = TestOutput
 export type TestOutput = {
     Lines: {OutputListEntry.OutputData},
     Output: Fusion.Value<{OutputListEntry.OutputData}>,
+    UpdateQueued: boolean,
+    UpdateImmediately: boolean,
     EventConnections: {RBXScriptConnection},
 } & typeof(setmetatable({}, TestOutput))
 
@@ -26,6 +30,8 @@ function TestOutput.new(Scope: CreateFusionScope.FusionScope, Test: Fusion.UsedA
     local self = setmetatable({
         Lines = {},
         Output = Scope:Value({}),
+        UpdateQueued = false,
+        UpdateImmediately = false,
         EventConnections = {},
     }, TestOutput) :: TestOutput
 
@@ -48,7 +54,7 @@ function TestOutput.LoadForTest(self: TestOutput, Test: Test.Test?): ()
     end
     self.EventConnections = {}
     if not Test then
-        self:UpdateLines()
+        self:QueueUpdateLines()
         return
     end
 
@@ -60,11 +66,11 @@ function TestOutput.LoadForTest(self: TestOutput, Test: Test.Test?): ()
                 Text = Line,
             })
         end
-        self:UpdateLines()
+        self:QueueUpdateLines()
     end) :: any)
     table.insert(self.EventConnections, Test.OutputCleared:Connect(function()
         self.Lines = {}
-        self:UpdateLines()
+        self:QueueUpdateLines()
     end) :: any)
 
     --Store the initial logs.
@@ -77,7 +83,23 @@ function TestOutput.LoadForTest(self: TestOutput, Test: Test.Test?): ()
             })
         end
     end
-    self:UpdateLines()
+    self:QueueUpdateLines()
+end
+
+--[[
+Queues updating the displayed lines for the next frame.
+This is meant to reduce frequent reloads with new output.
+--]]
+function TestOutput.QueueUpdateLines(self: TestOutput): ()
+    if self.UpdateImmediately then
+        self:UpdateLines()
+    end
+    if self.UpdateQueued then return end
+    self.UpdateQueued = true
+    RunService.Heartbeat:Once(function()
+        self.UpdateQueued = false
+        self:UpdateLines()
+    end)
 end
 
 --[[

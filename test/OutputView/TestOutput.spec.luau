@@ -18,6 +18,7 @@ return function()
             TestValue = TestScope:Value(nil :: Test.Test?)
             
             TestTestOutput = TestOutput.new(TestScope, TestValue)
+            TestTestOutput.UpdateImmediately = true
         end)
 
         afterEach(function()
