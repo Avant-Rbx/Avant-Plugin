@@ -7,6 +7,12 @@
             "AvantPlugin": {
                 "$path": "."
             }
+        },
+        "TestService": {
+            "$className": "TestService",
+            "AvantPlugin": {
+                "$path": "./test"
+            }
         }
     }
 }
