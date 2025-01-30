@@ -4,6 +4,7 @@
 local CreateFusionScope = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("CreateFusionScope"))
 local TestRunner = require(script.Parent.Parent:WaitForChild("TestRunner"))
 local CreateTestView = require(script.Parent:WaitForChild("CreateTestView"))
+local DisplayPaidVersionMessage = require(script.Parent:WaitForChild("DisplayPaidVersionMessage"))
 
 return function(Plugin: Plugin, Scope: CreateFusionScope.FusionScope, TestRunner: TestRunner.TestRunner): DockWidgetPluginGui
     --Create the window.
@@ -17,6 +18,9 @@ return function(Plugin: Plugin, Scope: CreateFusionScope.FusionScope, TestRunner
         while not Window.Enabled do
             Window:GetPropertyChangedSignal("Enabled"):Wait()
         end
+
+        --Display the paid version information.
+        DisplayPaidVersionMessage(Scope, Plugin, Window)
 
         --Create the view.
         Scope:Hydrate(CreateTestView(Scope, TestRunner))({
