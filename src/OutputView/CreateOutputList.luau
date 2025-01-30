@@ -27,6 +27,9 @@ return function(Scope: CreateFusionScope.FusionScope, TestRunner: TestRunner.Tes
     Scope:Observer(Output.Output):onBind(function()
         VirtualList:SetData(Fusion.peek(Output.Output))
     end)
+    Scope:Observer(Output.MaxLineWidth):onBind(function()
+        VirtualList:SetScrollWidth(UDim.new(0, 6 + Fusion.peek(Output.MaxLineWidth)))
+    end)
 
     --Return the frame.
     return ScrollingFrame

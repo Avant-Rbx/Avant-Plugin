@@ -2,6 +2,7 @@
 --!strict
 
 local RunService = game:GetService("RunService")
+local TextService = game:GetService("TextService")
 
 local Test = require(script.Parent.Parent:WaitForChild("AvantRuntime"):WaitForChild("State"):WaitForChild("Test"):WaitForChild("Test"))
 local FormatLines = require(script.Parent.Parent:WaitForChild("AvantRuntime"):WaitForChild("Util"):WaitForChild("FormatLines"))
@@ -14,6 +15,7 @@ TestOutput.__index = TestOutput
 
 export type TestOutput = {
     Lines: {OutputListEntry.OutputData},
+    MaxLineWidth: Fusion.Value<number>,
     Output: Fusion.Value<{OutputListEntry.OutputData}>,
     UpdateQueued: boolean,
     UpdateImmediately: boolean,
@@ -29,6 +31,7 @@ function TestOutput.new(Scope: CreateFusionScope.FusionScope, Test: Fusion.UsedA
     --Create the object.
     local self = setmetatable({
         Lines = {},
+        MaxLineWidth = Scope:Value(0),
         Output = Scope:Value({}),
         UpdateQueued = false,
         UpdateImmediately = false,
@@ -52,6 +55,8 @@ function TestOutput.LoadForTest(self: TestOutput, Test: Test.Test?): ()
     for _, EventConnection in self.EventConnections do
         EventConnection:Disconnect()
     end
+    self.Lines = {}
+    self.MaxLineWidth:set(0)
     self.EventConnections = {}
     if not Test then
         self:QueueUpdateLines()
@@ -61,29 +66,42 @@ function TestOutput.LoadForTest(self: TestOutput, Test: Test.Test?): ()
     --Connect the log events.
     table.insert(self.EventConnections, Test.OutputAdded:Connect(function(Contents)
         for _, Line in FormatLines(Contents.Contents, Contents.ContentsSize) do
-            table.insert(self.Lines, {
-                MessageType = Contents.MessageType,
-                Text = Line,
-            })
+            self:AddOutput(Contents.MessageType, Line)
         end
         self:QueueUpdateLines()
     end) :: any)
     table.insert(self.EventConnections, Test.OutputCleared:Connect(function()
         self.Lines = {}
+        self.MaxLineWidth:set(0)
         self:QueueUpdateLines()
     end) :: any)
 
     --Store the initial logs.
-    self.Lines = {}
     for _, Contents in Test.Output do
         for _, Line in FormatLines(Contents.Contents, Contents.ContentsSize) do
-            table.insert(self.Lines, {
-                MessageType = Contents.MessageType,
-                Text = Line,
-            })
+            self:AddOutput(Contents.MessageType, Line)
         end
     end
     self:QueueUpdateLines()
+end
+
+--[[
+Adds a line.
+Does not update values.
+--]]
+function TestOutput.AddOutput(self: TestOutput, MessageType: Enum.MessageType, Text: string): ()
+    --Add the line.
+    table.insert(self.Lines, {
+        MessageType = MessageType,
+        Text = Text,
+    })
+
+    --Update the max width.
+    local CurrentMaxWidth = Fusion.peek(self.MaxLineWidth)
+    local NewMaxWidth = TextService:GetTextSize(Text, 14, Enum.Font.SourceSans, Vector2.new(1000000, 14)).X
+    if NewMaxWidth > CurrentMaxWidth then
+        self.MaxLineWidth:set(NewMaxWidth)
+    end
 end
 
 --[[
