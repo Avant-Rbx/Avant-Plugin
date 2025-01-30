@@ -23,12 +23,11 @@ CreateOutputWindow(plugin, Scope, ModuleTestRunner)
 
 --Create the button.
 local AvantToolbar = plugin:CreateToolbar("Avant")
-local UnitTestsButton = AvantToolbar:CreateButton("Unit Tests", "Opens the Avant Unit Test window", "rbxassetid://4734891702") --TODO: Replace icon.
+local UnitTestsButton = AvantToolbar:CreateButton("Unit Tests", "Opens the Avant Unit Test window", "rbxassetid://130877862505796")
 local UnitTestsToggleButton = CreatePluginToggleButton(UnitTestsButton, TestListWindow)
 UnitTestsToggleButton.ClickableWhenViewportHidden = true
 
 --Create the actions.
---TODO: Replace icons.
 plugin:CreatePluginAction("Avant_RunAllTests", "Run Unit Tests", "Runs all the unit tests in the game.\nPart of Avant.", "rbxassetid://4734926678").Triggered:Connect(function()
     TestListWindow.Enabled = true
     ModuleTestRunner:RunTestsForGroup("ALL")
