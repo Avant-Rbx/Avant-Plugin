@@ -51,16 +51,23 @@ function TestRunner.RunTests(self: TestRunner, Tests: {Test.Test}): ()
     --Set the start time as now.
     self.LastTestRunTime:set(DateTime.now())
 
-    --Run the tests.
+    --Reset the tests.
     local RootTest = self.ListEntry.Test
+    local FilteredTests = {}
     for _, Test in Tests do
         if Test.ModuleScript then
-            --Run the test.
-            RunModuleScript(Test :: Test.Test)
+            --Reset the test state.
+            (Test :: Test.Test):ResetTestState()
+            table.insert(FilteredTests, Test)
         else
             --Remove the test since the source no longer exists.
             RootTest:RemoveChildTest(Test :: Test.Test)
         end
+    end
+
+    --Run the tests.
+    for _, Test in FilteredTests do
+        RunModuleScript(Test :: Test.Test)
     end
 end
 

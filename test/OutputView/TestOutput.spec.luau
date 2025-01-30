@@ -57,7 +57,7 @@ return function()
             TestTest:AddOutput(Enum.MessageType.MessageOutput, "Test message 1", "Test message 2")
             TestTest:AddOutput(Enum.MessageType.MessageWarning, "Test message 3\nTest message 4")
             task.wait()
-            TestTest:ClearOutput()
+            TestTest:ResetTestState()
             task.wait()
 
             local Output = TestScope.peek(TestTestOutput.Output)
