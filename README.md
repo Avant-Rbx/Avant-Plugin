@@ -5,9 +5,7 @@ library to create custom runners, see [Avant-Runtime](https://github.com/Avant-R
 This is the successor to [Nexus Unit Testing Plugin](https://github.com/TheNexusAvenger/Nexus-Unit-Testing-Plugin).
 
 ⚠️ At the moment, only [TestEZ](https://github.com/Roblox/testez) is supported.
-Support of [Jest](https://github.com/Roblox/jest-roblox) is planned, but
-examples of usage in projects are required. Please create or add to a GitHub
-Issue in [Avant-Runtime](https://github.com/Avant-Rbx/Avant-Runtime) for this.
+See [Avant-Runtime](https://github.com/Avant-Rbx/Avant-Runtime)'s README for more.
 
 ## Paid Version
 Avant is sold as a paid plugin. In order to use the plugin, it is expected
