@@ -10,7 +10,7 @@ See [Avant-Runtime](https://github.com/Avant-Rbx/Avant-Runtime)'s README for mor
 ## Paid Version
 Avant is sold as a paid plugin. In order to use the plugin, it is expected
 to pay for a version from one of the following:
-- Itch *(Upload coming soon)*
+- [Itch](https://thenexusavenger.itch.io/avant-plugin)
 - [Roblox Creator Marketplace](https://create.roblox.com/store/asset/11039022908/)
 
 Itch has the option to pay what you want beyond the minimum, while Roblox
