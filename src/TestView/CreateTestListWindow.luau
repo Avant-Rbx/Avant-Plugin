@@ -1,12 +1,12 @@
 --Creates a window for the test list.
 --!strict
 
-local CreateFusionScope = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("CreateFusionScope"))
+local NexusPluginComponents = require(script.Parent.Parent:WaitForChild("Packages"):WaitForChild("NexusPluginComponents"))
 local TestRunner = require(script.Parent.Parent:WaitForChild("TestRunner"))
 local CreateTestView = require(script.Parent:WaitForChild("CreateTestView"))
 local DisplayPaidVersionMessage = require(script.Parent:WaitForChild("DisplayPaidVersionMessage"))
 
-return function(Plugin: Plugin, Scope: CreateFusionScope.FusionScope, TestRunner: TestRunner.TestRunner): DockWidgetPluginGui
+return function(Plugin: Plugin, Scope: NexusPluginComponents.FusionScope, TestRunner: TestRunner.TestRunner): DockWidgetPluginGui
     --Create the window.
     local Window = Plugin:CreateDockWidgetPluginGui("Unit Tests", DockWidgetPluginGuiInfo.new(Enum.InitialDockState.Bottom, false, false, 300, 200, 200, 100))
     Window.Title = "Unit Tests"

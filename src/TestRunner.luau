@@ -1,11 +1,12 @@
 --Runs tests in Avant.
 --!strict
 
-local RunModuleScript = require(script.Parent:WaitForChild("AvantRuntime"):WaitForChild("Runner"):WaitForChild("RunModuleScript"))
-local Test = require(script.Parent:WaitForChild("AvantRuntime"):WaitForChild("State"):WaitForChild("Test"):WaitForChild("Test"))
-local CreateFusionScope = require(script.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("CreateFusionScope"))
-local Fusion = require(script.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("Fusion"))
+local AvantRuntime = require(script.Parent:WaitForChild("Packages"):WaitForChild("AvantRuntime"))
+local NexusPluginComponents = require(script.Parent:WaitForChild("Packages"):WaitForChild("NexusPluginComponents"))
 local TestSelectionListEntry = require(script.Parent:WaitForChild("TestView"):WaitForChild("TestSelectionListEntry"))
+
+local RunModuleScript = AvantRuntime.RunModuleScript
+local Fusion = NexusPluginComponents.Fusion
 
 local TestRunner = {}
 TestRunner.__index = TestRunner
@@ -13,8 +14,8 @@ TestRunner.__index = TestRunner
 export type TestGroup = "ALL" | "FAILED" | "SELECTED"
 export type TestRunner = {
     ListEntry: TestSelectionListEntry.TestSelectionListEntry,
-    LastTestRunTime: Fusion.Value<DateTime?>,
-    FocusedOutputTest: Fusion.Value<Test.Test?>,
+    LastTestRunTime: NexusPluginComponents.Value<DateTime?>,
+    FocusedOutputTest: NexusPluginComponents.Value<AvantRuntime.Test?>,
 } & typeof(setmetatable({}, TestRunner))
 
 
@@ -22,12 +23,12 @@ export type TestRunner = {
 --[[
 Returns if a test failed or a child test failed.
 --]]
-local function TestFailed(Test: Test.Test): boolean
+local function TestFailed(Test: AvantRuntime.Test): boolean
     if Test.State == "FAILED" then
         return true
     end
     for _, ChildTest in Test.ChildTests do
-        if not TestFailed(ChildTest :: Test.Test) then continue end
+        if not TestFailed(ChildTest :: AvantRuntime.Test) then continue end
         return true
     end
     return false
@@ -36,18 +37,18 @@ end
 --[[
 Creates a test runner.
 --]]
-function TestRunner.new(Scope: CreateFusionScope.FusionScope, ListEntry: TestSelectionListEntry.TestSelectionListEntry): TestRunner
+function TestRunner.new(Scope: NexusPluginComponents.FusionScope, ListEntry: TestSelectionListEntry.TestSelectionListEntry): TestRunner
     return setmetatable({
         ListEntry = ListEntry,
         LastTestRunTime = Scope:Value(nil :: DateTime?),
-        FocusedOutputTest = Scope:Value(nil :: Test.Test?),
+        FocusedOutputTest = Scope:Value(nil :: AvantRuntime.Test?),
     }, TestRunner) :: TestRunner
 end
 
 --[[
 Runs a set of tests.
 --]]
-function TestRunner.RunTests(self: TestRunner, Tests: {Test.Test}): ()
+function TestRunner.RunTests(self: TestRunner, Tests: {AvantRuntime.Test}): ()
     --Set the start time as now.
     self.LastTestRunTime:set(DateTime.now())
 
@@ -57,28 +58,28 @@ function TestRunner.RunTests(self: TestRunner, Tests: {Test.Test}): ()
     for _, Test in Tests do
         if Test.ModuleScript then
             --Reset the test state.
-            (Test :: Test.Test):ResetTestState()
+            (Test :: AvantRuntime.Test):ResetTestState()
             table.insert(FilteredTests, Test)
         else
             --Remove the test since the source no longer exists.
-            RootTest:RemoveChildTest(Test :: Test.Test)
+            RootTest:RemoveChildTest(Test :: AvantRuntime.Test)
         end
     end
 
     --Run the tests.
     for _, Test in FilteredTests do
-        RunModuleScript(Test :: Test.Test)
+        RunModuleScript(Test :: AvantRuntime.Test)
     end
 end
 
 --[[
 Returns the tests for a group.
 --]]
-function TestRunner.GetTestsForGroup(self: TestRunner, Group: TestGroup): {Test.Test}
+function TestRunner.GetTestsForGroup(self: TestRunner, Group: TestGroup): {AvantRuntime.Test}
     local Tests = {}
     for _, ChildEntry in Fusion.peek(self.ListEntry.Entry.Children) do
         --Determine if the condition matches.
-        local ChildTest = Fusion.peek(ChildEntry.Data) :: Test.Test
+        local ChildTest = Fusion.peek(ChildEntry.Data) :: AvantRuntime.Test
         local TestMatches = false
         if Group == "ALL" then
             TestMatches = true
@@ -119,7 +120,7 @@ end
 --[[
 Focues the output of a test.
 --]]
-function TestRunner.FocusOutput(self: TestRunner, Test: Test.Test): ()
+function TestRunner.FocusOutput(self: TestRunner, Test: AvantRuntime.Test): ()
     self.FocusedOutputTest:set(Test)
 end
 

@@ -1,10 +1,9 @@
 --Helper to format primary text with a secondary part.
 --!strict
 
-local CreateFusionScope = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("CreateFusionScope"))
-local Fusion = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("Fusion"))
+local NexusPluginComponents = require(script.Parent.Parent:WaitForChild("Packages"):WaitForChild("NexusPluginComponents"))
 
-return function(Scope: CreateFusionScope.FusionScope, PrimaryText: Fusion.UsedAs<string>, SecondaryText: Fusion.UsedAs<string?>): Fusion.UsedAs<string>
+return function(Scope: NexusPluginComponents.FusionScope, PrimaryText: NexusPluginComponents.UsedAs<string>, SecondaryText: NexusPluginComponents.UsedAs<string?>): NexusPluginComponents.UsedAs<string>
     local SubTextColor = Scope:PluginColor(Enum.StudioStyleGuideColor.SubText)
     return Scope:Computed(function(use)
         local CurrentSubTextColor = use(SubTextColor)

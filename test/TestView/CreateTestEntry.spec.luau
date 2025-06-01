@@ -3,9 +3,12 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local Test = require(ReplicatedStorage.AvantPlugin.AvantRuntime.State.Test.Test)
-local CreateFusionScope = require(ReplicatedStorage.AvantPlugin.NexusPluginComponents.CreateFusionScope)
+local AvantRuntime = require(ReplicatedStorage.AvantPlugin.Packages.AvantRuntime)
+local NexusPluginComponents = require(ReplicatedStorage.AvantPlugin.Packages.NexusPluginComponents)
 local CreateTestEntry = require(ReplicatedStorage.AvantPlugin.TestView.CreateTestEntry)
+
+local Test = AvantRuntime.Test
+local CreateFusionScope = NexusPluginComponents.CreateFusionScope
 
 return function()
     describe("A TestEntry", function()

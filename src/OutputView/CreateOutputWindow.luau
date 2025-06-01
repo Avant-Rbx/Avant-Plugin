@@ -1,12 +1,13 @@
 --Creates a window for the test output.
 --!strict
 
-local CreateFusionScope = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("CreateFusionScope"))
-local Fusion = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("Fusion"))
+local NexusPluginComponents = require(script.Parent.Parent:WaitForChild("Packages"):WaitForChild("NexusPluginComponents"))
 local TestRunner = require(script.Parent.Parent:WaitForChild("TestRunner"))
 local CreateOutputView = require(script.Parent:WaitForChild("CreateOutputView"))
 
-return function(Plugin: Plugin, Scope: CreateFusionScope.FusionScope, TestRunner: TestRunner.TestRunner): DockWidgetPluginGui
+local Fusion = NexusPluginComponents.Fusion
+
+return function(Plugin: Plugin, Scope: NexusPluginComponents.FusionScope, TestRunner: TestRunner.TestRunner): DockWidgetPluginGui
     --Create the window.
     local Window = Plugin:CreateDockWidgetPluginGui("Test Output", DockWidgetPluginGuiInfo.new(Enum.InitialDockState.Bottom, false, false, 300, 200, 200, 100))
     Window.Title = "Test Output"

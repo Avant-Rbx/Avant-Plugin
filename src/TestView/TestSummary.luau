@@ -1,20 +1,19 @@
 --Stores totals for tests.
 --!strict
 
-local Test = require(script.Parent.Parent:WaitForChild("AvantRuntime"):WaitForChild("State"):WaitForChild("Test"):WaitForChild("Test"))
-local CreateFusionScope = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("CreateFusionScope"))
-local Fusion = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("Fusion"))
+local AvantRuntime = require(script.Parent.Parent:WaitForChild("Packages"):WaitForChild("AvantRuntime"))
+local NexusPluginComponents = require(script.Parent.Parent:WaitForChild("Packages"):WaitForChild("NexusPluginComponents"))
 
 local TestSummary = {}
 TestSummary.__index = TestSummary
 
 export type TestSummary = {
-    RootTest: Test.Test,
-    TotalTests: Fusion.Value<number>,
-    PassedTests: Fusion.Value<number>,
-    SkippedTests: Fusion.Value<number>,
-    FailedTests: Fusion.Value<number>,
-    ChildTests: {[Test.Test]: boolean},
+    RootTest: AvantRuntime.Test,
+    TotalTests: NexusPluginComponents.Value<number>,
+    PassedTests: NexusPluginComponents.Value<number>,
+    SkippedTests: NexusPluginComponents.Value<number>,
+    FailedTests: NexusPluginComponents.Value<number>,
+    ChildTests: {[AvantRuntime.Test]: boolean},
 } & typeof(setmetatable({}, TestSummary))
 
 
@@ -22,7 +21,7 @@ export type TestSummary = {
 --[[
 Creates a test summary.
 --]]
-function TestSummary.new(Scope: CreateFusionScope.FusionScope, RootTest: Test.Test): TestSummary
+function TestSummary.new(Scope: NexusPluginComponents.FusionScope, RootTest: AvantRuntime.Test): TestSummary
     --Create the object.
     local self = setmetatable({
         RootTest = RootTest,
@@ -43,7 +42,7 @@ end
 --[[
 Initializes a test.
 --]]
-function TestSummary.InitializeTest(self: TestSummary, Test: Test.Test): ()
+function TestSummary.InitializeTest(self: TestSummary, Test: AvantRuntime.Test): ()
     --Store the test.
     if self.ChildTests[Test] then return end
     self.ChildTests[Test] = true
@@ -64,7 +63,7 @@ function TestSummary.InitializeTest(self: TestSummary, Test: Test.Test): ()
 
     --Connect existing tests.
     for _, ChildTest in Test.ChildTests do
-        self:InitializeTest(ChildTest :: Test.Test)
+        self:InitializeTest(ChildTest :: AvantRuntime.Test)
     end
     self:UpdateTotals()
 end
@@ -72,10 +71,10 @@ end
 --[[
 Removes a test.
 --]]
-function TestSummary.RemoveTest(self: TestSummary, Test: Test.Test): ()
+function TestSummary.RemoveTest(self: TestSummary, Test: AvantRuntime.Test): ()
     self.ChildTests[Test] = nil
     for _, ChildTest in Test.ChildTests do
-        self:RemoveTest(ChildTest :: Test.Test)
+        self:RemoveTest(ChildTest :: AvantRuntime.Test)
     end
 end
 

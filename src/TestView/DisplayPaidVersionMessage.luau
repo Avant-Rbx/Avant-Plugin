@@ -8,12 +8,12 @@ local IS_PAID_VERSION = false
 local UNPAID_VERSION_IGNORE_SETTING_NAME = "Avant_LastPaidVersionIgnoreTime"
 local UNPAID_VERSION_REMINDER_TIME_SECONDS = 30 * 24 * 60 * 60
 
-local CreateFusionScope = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("CreateFusionScope"))
-local Fusion = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("Fusion"))
+local NexusPluginComponents = require(script.Parent.Parent:WaitForChild("Packages"):WaitForChild("NexusPluginComponents"))
 
+local Fusion = NexusPluginComponents.Fusion
 local Children = Fusion.Children
 
-return function(Scope: CreateFusionScope.FusionScope, Plugin: Plugin, Parent: Instance): ()
+return function(Scope: NexusPluginComponents.FusionScope, Plugin: Plugin, Parent: Instance): ()
     --Return if a paid version is detected.
     if IS_PAID_VERSION then return true end
 

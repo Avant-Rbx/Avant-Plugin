@@ -1,14 +1,15 @@
 --Creates a list for the output of a test.
 --!strict
 
-local CreateFusionScope = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("CreateFusionScope"))
-local Fusion = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("Fusion"))
-local NexusVirtualList = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("NexusVirtualList"))
+local NexusPluginComponents = require(script.Parent.Parent:WaitForChild("Packages"):WaitForChild("NexusPluginComponents"))
 local TestRunner = require(script.Parent.Parent:WaitForChild("TestRunner"))
 local OutputListEntry = require(script.Parent:WaitForChild("OutputListEntry"))
 local TestOutput = require(script.Parent:WaitForChild("TestOutput"))
 
-return function(Scope: CreateFusionScope.FusionScope, TestRunner: TestRunner.TestRunner): ScrollingFrame
+local Fusion = NexusPluginComponents.Fusion
+local NexusVirtualList = NexusPluginComponents.NexusVirtualList
+
+return function(Scope: NexusPluginComponents.FusionScope, TestRunner: TestRunner.TestRunner): ScrollingFrame
     --Create the ScrollingFrame.
     local ScrollingFrame = Scope:Create("ScrollingFrame")({
         BackgroundTransparency = 1,

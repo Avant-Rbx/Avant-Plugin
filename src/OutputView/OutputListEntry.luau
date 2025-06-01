@@ -3,9 +3,9 @@
 
 local TEXT_MARGIN_PIXELS = 3
 
-local CreateFusionScope = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("CreateFusionScope"))
-local Fusion = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("Fusion"))
+local NexusPluginComponents = require(script.Parent.Parent:WaitForChild("Packages"):WaitForChild("NexusPluginComponents"))
 
+local Fusion = NexusPluginComponents.Fusion
 local Children = Fusion.Children
 local MainTextColorByScope = {}
 local ColorsByScope = {}
@@ -18,8 +18,8 @@ export type OutputData = {
     Text: string,
 }
 export type OutputListEntry = {
-    Scope: CreateFusionScope.FusionScope,
-    Data: Fusion.Value<OutputData>,
+    Scope: NexusPluginComponents.FusionScope,
+    Data: NexusPluginComponents.Value<OutputData>,
     GuiInstance: GuiObject,
 } & typeof(setmetatable({}, OutputListEntry))
 
@@ -28,7 +28,7 @@ export type OutputListEntry = {
 --[[
 Creates an output list entry.
 --]]
-function OutputListEntry.new(ParentScope: CreateFusionScope.FusionScope, InitialData: OutputData): OutputListEntry
+function OutputListEntry.new(ParentScope: NexusPluginComponents.FusionScope, InitialData: OutputData): OutputListEntry
     --Populate the plugin colors for the scope.
     --PluginColor does not cache internally, so this is required for now.
     if not MainTextColorByScope[ParentScope] then
@@ -44,8 +44,8 @@ function OutputListEntry.new(ParentScope: CreateFusionScope.FusionScope, Initial
     end
 
     --Create and return the object.
-    local Scope = ParentScope:innerScope() :: CreateFusionScope.FusionScope
-    local DataValue = Scope:Value(InitialData) :: Fusion.Value<OutputData>
+    local Scope = ParentScope:innerScope() :: NexusPluginComponents.FusionScope
+    local DataValue = Scope:Value(InitialData) :: NexusPluginComponents.Value<OutputData>
     local MainTextColor = MainTextColorByScope[ParentScope]
     local CurrentColorsByScope = ColorsByScope[ParentScope]
     return setmetatable({

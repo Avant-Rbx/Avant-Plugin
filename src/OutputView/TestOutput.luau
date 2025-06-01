@@ -4,19 +4,20 @@
 local RunService = game:GetService("RunService")
 local TextService = game:GetService("TextService")
 
-local Test = require(script.Parent.Parent:WaitForChild("AvantRuntime"):WaitForChild("State"):WaitForChild("Test"):WaitForChild("Test"))
-local FormatLines = require(script.Parent.Parent:WaitForChild("AvantRuntime"):WaitForChild("Util"):WaitForChild("FormatLines"))
-local CreateFusionScope = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("CreateFusionScope"))
-local Fusion = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("Fusion"))
+local AvantRuntime = require(script.Parent.Parent:WaitForChild("Packages"):WaitForChild("AvantRuntime"))
+local NexusPluginComponents = require(script.Parent.Parent:WaitForChild("Packages"):WaitForChild("NexusPluginComponents"))
 local OutputListEntry = require(script.Parent:WaitForChild("OutputListEntry"))
+
+local FormatLines = AvantRuntime.FormatLines
+local Fusion = NexusPluginComponents.Fusion
 
 local TestOutput = {}
 TestOutput.__index = TestOutput
 
 export type TestOutput = {
     Lines: {OutputListEntry.OutputData},
-    MaxLineWidth: Fusion.Value<number>,
-    Output: Fusion.Value<{OutputListEntry.OutputData}>,
+    MaxLineWidth: NexusPluginComponents.Value<number>,
+    Output: NexusPluginComponents.Value<{OutputListEntry.OutputData}>,
     UpdateQueued: boolean,
     UpdateImmediately: boolean,
     EventConnections: {RBXScriptConnection},
@@ -27,7 +28,7 @@ export type TestOutput = {
 --[[
 Creates a test output.
 --]]
-function TestOutput.new(Scope: CreateFusionScope.FusionScope, Test: Fusion.UsedAs<Test.Test?>): TestOutput
+function TestOutput.new(Scope: NexusPluginComponents.FusionScope, Test: NexusPluginComponents.UsedAs<AvantRuntime.Test?>): TestOutput
     --Create the object.
     local self = setmetatable({
         Lines = {},
@@ -50,7 +51,7 @@ end
 --[[
 Loads the output from a test.
 --]]
-function TestOutput.LoadForTest(self: TestOutput, Test: Test.Test?): ()
+function TestOutput.LoadForTest(self: TestOutput, Test: AvantRuntime.Test?): ()
     --Clear the existing events.
     for _, EventConnection in self.EventConnections do
         EventConnection:Disconnect()

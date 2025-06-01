@@ -1,12 +1,13 @@
 --Creates an icon for a test with a specific test.
 --!strict
 
-local Test = require(script.Parent.Parent:WaitForChild("AvantRuntime"):WaitForChild("State"):WaitForChild("Test"):WaitForChild("Test"))
-local CreateFusionScope = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("CreateFusionScope"))
-local Fusion = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("Fusion"))
+local AvantRuntime = require(script.Parent.Parent:WaitForChild("Packages"):WaitForChild("AvantRuntime"))
+local NexusPluginComponents = require(script.Parent.Parent:WaitForChild("Packages"):WaitForChild("NexusPluginComponents"))
 local CreateTestIcon = require(script.Parent:WaitForChild("CreateTestIcon"))
 
-return function(Scope: CreateFusionScope.FusionScope, Test: Fusion.UsedAs<Test.Test>): ImageLabel
+local Fusion = NexusPluginComponents.Fusion
+
+return function(Scope: NexusPluginComponents.FusionScope, Test: NexusPluginComponents.UsedAs<AvantRuntime.Test>): ImageLabel
     --Create a value for the test having an output.
     local HasOutput = Scope:Value(false)
     local TestEventConnections = {} :: {RBXScriptConnection}
@@ -16,7 +17,7 @@ return function(Scope: CreateFusionScope.FusionScope, Test: Fusion.UsedAs<Test.T
         end
         TestEventConnections = {}
 
-        local CurrentTest = Fusion.peek(Test) :: Test.Test
+        local CurrentTest = Fusion.peek(Test) :: AvantRuntime.Test
         table.insert(TestEventConnections, CurrentTest.OutputAdded:Connect(function()
             HasOutput:set(true)
         end) :: any)

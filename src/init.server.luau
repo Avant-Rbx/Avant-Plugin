@@ -1,13 +1,16 @@
 --Runs the Avant plugin.
 --!strict
 
-local ModuleScriptDiscovery = require(script:WaitForChild("AvantRuntime"):WaitForChild("State"):WaitForChild("Discovery"):WaitForChild("ModuleScriptDiscovery"))
-local CreatePluginToggleButton = require(script:WaitForChild("NexusPluginComponents"):WaitForChild("Input"):WaitForChild("Plugin"):WaitForChild("CreatePluginToggleButton"))
-local CreateFusionScope = require(script:WaitForChild("NexusPluginComponents"):WaitForChild("CreateFusionScope"))
+local AvantRuntime = require(script:WaitForChild("Packages"):WaitForChild("AvantRuntime"))
+local NexusPluginComponents = require(script:WaitForChild("Packages"):WaitForChild("NexusPluginComponents"))
 local CreateOutputWindow = require(script:WaitForChild("OutputView"):WaitForChild("CreateOutputWindow"))
 local CreateTestListWindow = require(script:WaitForChild("TestView"):WaitForChild("CreateTestListWindow"))
 local TestSelectionListEntry = require(script:WaitForChild("TestView"):WaitForChild("TestSelectionListEntry"))
 local TestRunner = require(script:WaitForChild("TestRunner"))
+
+local ModuleScriptDiscovery = AvantRuntime.ModuleScriptDiscovery
+local CreateFusionScope = NexusPluginComponents.CreateFusionScope
+local CreatePluginToggleButton = NexusPluginComponents.Input.Plugin.CreatePluginToggleButton
 
 
 

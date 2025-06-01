@@ -4,8 +4,10 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local CreateFusionScope = require(ReplicatedStorage.AvantPlugin.NexusPluginComponents.CreateFusionScope)
+local NexusPluginComponents = require(ReplicatedStorage.AvantPlugin.Packages.NexusPluginComponents)
 local OutputListEntry = require(ReplicatedStorage.AvantPlugin.OutputView.OutputListEntry)
+
+local CreateFusionScope = NexusPluginComponents.CreateFusionScope
 
 return function()
     describe("A OutputListEntry", function()

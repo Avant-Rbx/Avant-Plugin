@@ -23,13 +23,13 @@ local CONTENTS_COLORS = {
     MISSING = Color3.fromRGB(200, 50, 0),
 }
 
-local Test = require(script.Parent.Parent:WaitForChild("AvantRuntime"):WaitForChild("State"):WaitForChild("Test"):WaitForChild("Test"))
-local CreateFusionScope = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("CreateFusionScope"))
-local Fusion = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("Fusion"))
+local AvantRuntime = require(script.Parent.Parent:WaitForChild("Packages"):WaitForChild("AvantRuntime"))
+local NexusPluginComponents = require(script.Parent.Parent:WaitForChild("Packages"):WaitForChild("NexusPluginComponents"))
 
+local Fusion = NexusPluginComponents.Fusion
 local Children = Fusion.Children
 
-return function(Scope: CreateFusionScope.FusionScope, State: Fusion.UsedAs<Test.TestState>, ContentsState: Fusion.UsedAs<Test.TestContentsState>, HasOutput: Fusion.UsedAs<boolean>?): ImageLabel
+return function(Scope: NexusPluginComponents.FusionScope, State: NexusPluginComponents.UsedAs<AvantRuntime.TestState>, ContentsState: NexusPluginComponents.UsedAs<AvantRuntime.TestContentsState>, HasOutput: NexusPluginComponents.UsedAs<boolean>?): ImageLabel
     return Scope:Create("ImageLabel")({
         Name = "TestState",
         BackgroundTransparency = 1,

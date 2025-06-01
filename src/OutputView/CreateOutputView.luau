@@ -1,15 +1,16 @@
 --Creates a view for an output of a test.
 --!strict
 
-local CreateFusionScope = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("CreateFusionScope"))
-local Fusion = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("Fusion"))
+
+local NexusPluginComponents = require(script.Parent.Parent:WaitForChild("Packages"):WaitForChild("NexusPluginComponents"))
 local SecondaryTextFormatter = require(script.Parent.Parent:WaitForChild("Util"):WaitForChild("SecondaryTextFormatter"))
 local TestRunner = require(script.Parent.Parent:WaitForChild("TestRunner"))
 local CreateOutputList = require(script.Parent:WaitForChild("CreateOutputList"))
 
+local Fusion = NexusPluginComponents.Fusion
 local Children = Fusion.Children
 
-return function(Scope: CreateFusionScope.FusionScope, TestRunner: TestRunner.TestRunner): Frame
+return function(Scope: NexusPluginComponents.FusionScope, TestRunner: TestRunner.TestRunner): Frame
     --Create and return the view.
     local FocusedOutputTest = TestRunner.FocusedOutputTest
     return Scope:Create("Frame")({

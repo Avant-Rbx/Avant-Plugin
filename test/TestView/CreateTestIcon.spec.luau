@@ -3,8 +3,10 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local CreateFusionScope = require(ReplicatedStorage.AvantPlugin.NexusPluginComponents.CreateFusionScope)
+local NexusPluginComponents = require(ReplicatedStorage.AvantPlugin.Packages.NexusPluginComponents)
 local CreateTestIcon = require(ReplicatedStorage.AvantPlugin.TestView.CreateTestIcon)
+
+local CreateFusionScope = NexusPluginComponents.CreateFusionScope
 
 return function()
     describe("A TestIcon", function()

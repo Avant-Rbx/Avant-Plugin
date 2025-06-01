@@ -1,14 +1,14 @@
 --Creates a list of tests.
 --!strict
 
-local CreateFusionScope = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("CreateFusionScope"))
-local Fusion = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("Fusion"))
-local CreateExpandableList = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("List"):WaitForChild("CreateExpandableList"))
+local NexusPluginComponents = require(script.Parent.Parent:WaitForChild("Packages"):WaitForChild("NexusPluginComponents"))
 local TestRunner = require(script.Parent.Parent:WaitForChild("TestRunner"))
 local CreateTestEntry = require(script.Parent:WaitForChild("CreateTestEntry"))
 local TestSelectionListEntry = require(script.Parent:WaitForChild("TestSelectionListEntry"))
 
-return function(Scope: CreateFusionScope.FusionScope, ListEntry: TestSelectionListEntry.TestSelectionListEntry, TestRunner: TestRunner.TestRunner): ScrollingFrame
+local Fusion = NexusPluginComponents.Fusion
+
+return function(Scope: NexusPluginComponents.FusionScope, ListEntry: TestSelectionListEntry.TestSelectionListEntry, TestRunner: TestRunner.TestRunner): ScrollingFrame
     --Create the ScrollingFrame.
     local ScrollingFrame = Scope:Create("ScrollingFrame")({
         BackgroundTransparency = 1,
@@ -17,7 +17,7 @@ return function(Scope: CreateFusionScope.FusionScope, ListEntry: TestSelectionLi
     }) :: ScrollingFrame
 
     --Create the expandbale list with the tests.
-    local VirtualList = CreateExpandableList(Scope, ScrollingFrame, ListEntry.Entry, function(Scope, Entry, DoubleClicked)
+    local VirtualList = NexusPluginComponents.List.CreateExpandableList(Scope, ScrollingFrame, ListEntry.Entry, function(Scope, Entry, DoubleClicked)
         --Set up focusing the output of the test.
         DoubleClicked:Connect(function()
             TestRunner:FocusOutput(Fusion.peek(Fusion.peek(Entry).Data))

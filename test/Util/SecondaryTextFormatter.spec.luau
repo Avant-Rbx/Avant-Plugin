@@ -3,8 +3,10 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local CreateFusionScope = require(ReplicatedStorage.AvantPlugin.NexusPluginComponents.CreateFusionScope)
+local NexusPluginComponents = require(ReplicatedStorage.AvantPlugin.Packages.NexusPluginComponents)
 local SecondaryTextFormatter = require(ReplicatedStorage.AvantPlugin.Util.SecondaryTextFormatter)
+
+local CreateFusionScope = NexusPluginComponents.CreateFusionScope
 
 return function()
     describe("A SecondaryTextFormatter", function()

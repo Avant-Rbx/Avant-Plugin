@@ -1,13 +1,12 @@
 --Creates an entry for a test.
 --!strict
 
-local Test = require(script.Parent.Parent:WaitForChild("AvantRuntime"):WaitForChild("State"):WaitForChild("Test"):WaitForChild("Test"))
-local CreateFusionScope = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("CreateFusionScope"))
-local Fusion = require(script.Parent.Parent:WaitForChild("NexusPluginComponents"):WaitForChild("Fusion"))
+local AvantRuntime = require(script.Parent.Parent:WaitForChild("Packages"):WaitForChild("AvantRuntime"))
+local NexusPluginComponents = require(script.Parent.Parent:WaitForChild("Packages"):WaitForChild("NexusPluginComponents"))
 local SecondaryTextFormatter = require(script.Parent.Parent:WaitForChild("Util"):WaitForChild("SecondaryTextFormatter"))
 local CreateTestIconForTest = require(script.Parent:WaitForChild("CreateTestIconForTest"))
 
-return function(Scope: CreateFusionScope.FusionScope, Test: Fusion.UsedAs<Test.Test>): {Instance}
+return function(Scope: NexusPluginComponents.FusionScope, Test: NexusPluginComponents.UsedAs<AvantRuntime.Test>): {Instance}
     --Set up the duration calculation.
     local StartTime = Scope:ValueFromProperty(Test, "StartTime")
     local EndTime = Scope:ValueFromProperty(Test, "EndTime")
