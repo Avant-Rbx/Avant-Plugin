@@ -18,7 +18,7 @@ return function()
         beforeEach(function()
             TestScope = CreateFusionScope()
             TestTest = Test.new()
-            TestTestSelectionListEntry = TestSelectionListEntry.new(TestScope, TestTest)
+            TestTestSelectionListEntry = TestSelectionListEntry.new(TestScope, AvantRuntime.AvantConfiguration.new(), TestTest)
 
             TestTestRunner = TestRunner.new(TestScope, TestTestSelectionListEntry)
         end)

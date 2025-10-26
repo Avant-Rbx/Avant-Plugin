@@ -12,21 +12,23 @@ local CreateFusionScope = NexusPluginComponents.CreateFusionScope
 
 return function()
     describe("A TestSelectionListEntry", function()
-        local TestScope, TestTest1, TestTest2 = nil, nil, nil
+        local TestScope, TestConfiguration, TestTest1, TestTest2 = nil, nil, nil, nil
         local TestTestSelectionListEntry = nil
         beforeEach(function()
             TestScope = CreateFusionScope()
+            TestConfiguration = AvantRuntime.AvantConfiguration.new()
             TestTest1 = Test.new()
             TestTest1.Name = "Test1"
             TestTest2 = TestTest1:CreateChildTest()
             TestTest2.Name = "Test2"
 
-            TestTestSelectionListEntry = TestSelectionListEntry.new(TestScope, TestTest1)
+            TestTestSelectionListEntry = TestSelectionListEntry.new(TestScope, TestConfiguration, TestTest1)
         end)
 
         afterEach(function()
             TestScope:doCleanup()
             TestTest1:Destroy()
+            TestConfiguration:Destroy()
         end)
 
         it("should be set up existing child tests.", function()
@@ -98,6 +100,38 @@ return function()
             expect(TestScope.peek(CurrentChildren[1].Data)).to.equal(NewTest1)
             expect(TestScope.peek(CurrentChildren[2].Data)).to.equal(NewTest2)
             expect(TestScope.peek(CurrentChildren[3].Data)).to.equal(NewTest3)
+        end)
+
+        it("should check configurations for ignored values.", function()
+            local ModuleScript = Instance.new("ModuleScript")
+            ModuleScript.Name = "TestModuleScript"
+            
+            local ModuleScriptTest = TestTest2:CreateChildTest()
+            ModuleScriptTest.ModuleScript = ModuleScript
+            task.wait()
+            
+            local CurrentChildren = TestScope.peek(TestTestSelectionListEntry.ChildEntries[TestTest2].Entry.Children)
+            expect(#CurrentChildren).to.equal(1)
+            expect(TestScope.peek(CurrentChildren[1].Data)).to.equal(ModuleScriptTest)
+
+            local TestStringValue = Instance.new("StringValue")
+            TestConfiguration._IgnoredPaths = {
+                [TestStringValue] = {"TestModuleScript"},
+            }
+            TestConfiguration.ConfigurationChanged:Fire()
+            task.wait()
+            
+            CurrentChildren = TestScope.peek(TestTestSelectionListEntry.ChildEntries[TestTest2].Entry.Children)
+            expect(#CurrentChildren).to.equal(0)
+            TestConfiguration._IgnoredPaths = {
+                [TestStringValue] = {"OtherModuleScript"},
+            }
+            TestConfiguration.ConfigurationChanged:Fire()
+            task.wait()
+            
+            local CurrentChildren = TestScope.peek(TestTestSelectionListEntry.ChildEntries[TestTest2].Entry.Children)
+            expect(#CurrentChildren).to.equal(1)
+            expect(TestScope.peek(CurrentChildren[1].Data)).to.equal(ModuleScriptTest)
         end)
     end)
 end

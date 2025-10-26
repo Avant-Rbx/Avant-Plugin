@@ -13,6 +13,7 @@ TestSelectionListEntry.__index = TestSelectionListEntry
 export type SortMethod = "Name" | "SortIndex"
 export type TestSelectionListEntry = {
     Scope: NexusPluginComponents.FusionScope,
+    Configuration: AvantRuntime.AvantConfiguration,
     Test: AvantRuntime.Test,
     SortMethod: SortMethod,
     Entry: NexusPluginComponents.SelectionListEntry<AvantRuntime.Test>,
@@ -25,10 +26,11 @@ export type TestSelectionListEntry = {
 --[[
 Creates a SelectionListEntry for a test.
 --]]
-function TestSelectionListEntry.new(Scope: NexusPluginComponents.FusionScope, Test: AvantRuntime.Test, SortMethod: SortMethod?): TestSelectionListEntry
+function TestSelectionListEntry.new(Scope: NexusPluginComponents.FusionScope, Configuration: AvantRuntime.AvantConfiguration, Test: AvantRuntime.Test, SortMethod: SortMethod?): TestSelectionListEntry
     --Create the entry.
     local self = setmetatable({
         Scope = Scope,
+        Configuration = Configuration,
         Test = Test,
         SortMethod = SortMethod or "Name",
         Entry = SelectionListEntry.new(Scope, Test, function(a, b)
@@ -49,12 +51,30 @@ function TestSelectionListEntry.new(Scope: NexusPluginComponents.FusionScope, Te
     table.insert(self.EventConnections, Test.TestRemoved:Connect(function(ChildTest)
         self:RemoveChildTest(ChildTest)
     end) :: any)
-    for _, ChildTest in Test.ChildTests do
-        self:AddChildTest(ChildTest :: AvantRuntime.Test)
-    end
+    table.insert(self.EventConnections, Configuration.ConfigurationChanged:Connect(function()
+        self:UpdateChildTests()
+    end) :: any)
+    self:UpdateChildTests()
 
     --Return the entry.
     return self
+end
+
+--[[
+Updates the stored child tests.
+--]]
+function TestSelectionListEntry.UpdateChildTests(self: TestSelectionListEntry): ()
+    --Re-add the child tests.
+    for _, ChildTest in self.Test.ChildTests do
+        self:AddChildTest(ChildTest :: AvantRuntime.Test)
+    end
+
+    --Remove the child tests that are ignored.
+    for _, ChildTest in self.Test.ChildTests do
+        if not ChildTest.ModuleScript then continue end
+        if not self.Configuration:IsIgnored(ChildTest.ModuleScript:GetFullName()) then continue end
+        self:RemoveChildTest(ChildTest :: AvantRuntime.Test)
+    end
 end
 
 --[[
@@ -62,9 +82,10 @@ Adds an entry for a child test.
 --]]
 function TestSelectionListEntry.AddChildTest(self: TestSelectionListEntry, Test: AvantRuntime.Test): ()
     if self.ChildEntries[Test] then return end
+    if Test.ModuleScript and self.Configuration:IsIgnored(Test.ModuleScript:GetFullName()) then return end
 
     --Create the entry.
-    local NewEntry = TestSelectionListEntry.new(self.Scope, Test, "SortIndex")
+    local NewEntry = TestSelectionListEntry.new(self.Scope, self.Configuration, Test, "SortIndex")
     self.ChildEntries[Test] = NewEntry
     self.Entry:AddChild(NewEntry.Entry)
 

@@ -17,7 +17,7 @@ local CreatePluginToggleButton = NexusPluginComponents.Input.Plugin.CreatePlugin
 --Start the ModuleScript test tracking.
 local GameModuleScriptDiscovery = ModuleScriptDiscovery.new(game)
 local Scope = CreateFusionScope()
-local TestListEntry = TestSelectionListEntry.new(Scope, GameModuleScriptDiscovery.RootTest)
+local TestListEntry = TestSelectionListEntry.new(Scope, AvantRuntime.AvantConfiguration.GetInstance(), GameModuleScriptDiscovery.RootTest)
 local ModuleTestRunner = TestRunner.new(Scope, TestListEntry)
 
 --Create the windows.
